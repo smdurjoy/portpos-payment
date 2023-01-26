@@ -5,6 +5,7 @@ import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Order from "./components/Order";
 import OrderCreate from "./components/OrderCreate";
+import axios from "axios";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,11 @@ const router = createBrowserRouter([
     element: <OrderCreate />,
   },
 ]);
+
+// const token = localStorage.getItem("access_token");
+
+// axios.defaults.baseURL = "http://localhost:8000/";
+// axios.defaults.headers.common = { Authorization: `bearer ${token}` };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

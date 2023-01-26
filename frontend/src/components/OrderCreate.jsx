@@ -33,13 +33,6 @@ const OrderCreate = () => {
     },
   });
 
-  const handleInputChange = (e) => {
-    setOrderObj({
-      ...orderObj,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
     <div className="container">
       <Form>
@@ -62,16 +55,14 @@ const OrderCreate = () => {
                 type="text"
                 size="sm"
                 placeholder="Enter"
-                onChange={handleInputChange}
-                value={orderObj.billing.customer.name}
-                // onChange={(e) =>
-                //   setOrderObj((prevState) => {
-                //     prevState.customer.name = e.target.value;
-                //     return {
-                //       ...prevState,
-                //     };
-                //   })
-                // }
+                onChange={(e) =>
+                  setOrderObj((prevState) => {
+                    prevState.billing.customer.name = e.target.value;
+                    return {
+                      ...prevState,
+                    };
+                  })
+                }
               />
             </Form.Group>
           </Col>
@@ -82,8 +73,14 @@ const OrderCreate = () => {
                 type="email"
                 placeholder="Enter"
                 size="sm"
-                onChange={handleInputChange}
-                value={orderObj.billing.customer.email}
+                onChange={(e) =>
+                  setOrderObj((prevState) => {
+                    prevState.billing.customer.name = e.target.value;
+                    return {
+                      ...prevState,
+                    };
+                  })
+                }
               />
             </Form.Group>
           </Col>
