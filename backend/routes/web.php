@@ -6,6 +6,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('login', 'AuthController@login');
     $router->group(['middleware' => 'auth:api'], function ($router) {
         $router->post('logout', 'AuthController@logout');
+
+        $router->group(['prefix' => 'order'], function () use ($router) {
+            $router->get('/', 'OrderController@list');
+            $router->post('store', 'OrderController@store');
+        });
     });
 });
 

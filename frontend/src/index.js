@@ -9,11 +9,11 @@ import axios from "axios";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: <App />,
   },
   {
-    path: "/orders",
+    path: "/",
     element: <Order />,
   },
   {
@@ -21,11 +21,6 @@ const router = createBrowserRouter([
     element: <OrderCreate />,
   },
 ]);
-
-// const token = localStorage.getItem("access_token");
-
-// axios.defaults.baseURL = "http://localhost:8000/";
-// axios.defaults.headers.common = { Authorization: `bearer ${token}` };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

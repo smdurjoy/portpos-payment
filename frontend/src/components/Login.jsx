@@ -7,12 +7,15 @@ import Title from "./Title";
 import { useState } from "react";
 import axios from "axios";
 import Alert from "react-bootstrap/Alert";
+import ApiUrl from "../ApiUrl";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [isSumitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const store = async (e) => {
     e.preventDefault();
@@ -24,11 +27,12 @@ const Login = () => {
     try {
       const {
         data: { access_token },
-      } = await axios.post("http://localhost:8000/api/login", {
+      } = await axios.post(ApiUrl.login, {
         email,
         password,
       });
       localStorage.setItem("access_token", access_token);
+      navigate("/");
     } catch (error) {
       if (error.response.status === 401) {
         setShow(true);
