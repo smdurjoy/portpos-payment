@@ -80,7 +80,6 @@ const Invoice = ({ invoiceDetails }) => {
             </tr>
           </tbody>
         </table>
-        <a className="add">+</a>
         <table className="balance">
           <tr>
             <th>

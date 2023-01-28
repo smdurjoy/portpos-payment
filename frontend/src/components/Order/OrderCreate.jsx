@@ -4,9 +4,8 @@ import Row from "react-bootstrap/esm/Row";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from "react-router-dom";
-import ApiUrl from "../ApiUrl";
+import ApiUrl from "../../ApiUrl";
 import axios from "axios";
-import AlertMsg from "./AlertMsg";
 
 const OrderCreate = () => {
   const [orderObj, setOrderObj] = useState({
@@ -36,7 +35,6 @@ const OrderCreate = () => {
   });
   const [token, setToken] = useState(null);
   const [isSumitting, setIsSubmitting] = useState(false);
-  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,10 +60,7 @@ const OrderCreate = () => {
         orderObj
       );
       localStorage.setItem("order", JSON.stringify(data));
-      setShow(true);
-      setTimeout(() => {
-        navigate("/");
-      }, 500);
+      navigate("/");
     } catch (err) {
       console.log({ err });
       alert("Something Went Wrong.");
@@ -97,15 +92,6 @@ const OrderCreate = () => {
 
   return (
     <div className="container">
-      <Row className="mt-5">
-        <Col md={{ span: 6, offset: 3 }}>
-          <AlertMsg
-            showStatus={show}
-            variant="success"
-            msg="Stored Successfully."
-          />
-        </Col>
-      </Row>
       <Form md={3} onSubmit={handleSubmit}>
         <Row className="mt-5">
           <Col md={12}>

@@ -7,9 +7,9 @@ import Modal from "react-bootstrap/Modal";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ApiUrl from "../ApiUrl";
+import ApiUrl from "../../ApiUrl";
 import { useNavigate } from "react-router-dom";
-import Invoice from "./Invoice/Invoice";
+import Invoice from "../Invoice/Invoice";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);

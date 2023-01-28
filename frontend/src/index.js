@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Order from "./components/Order";
-import OrderCreate from "./components/OrderCreate";
+import Order from "./components/Order/Order";
+import OrderCreate from "./components/Order/OrderCreate";
 
 const router = createBrowserRouter([
   {

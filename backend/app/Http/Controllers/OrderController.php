@@ -6,9 +6,7 @@ use App\Models\Order;
 use App\Services\InvoiceGeneratorService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
-use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
