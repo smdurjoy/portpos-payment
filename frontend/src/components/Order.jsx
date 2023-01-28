@@ -3,17 +3,21 @@ import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ApiUrl from "../ApiUrl";
 import { useNavigate } from "react-router-dom";
+import Invoice from "./Invoice/Invoice";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
+  const [invoiceDetails, setInvoiceDetails] = useState([]);
   const [token, setToken] = useState(null);
   const [isSumitting, setIsSubmitting] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +48,7 @@ const Order = () => {
   };
 
   const logout = async () => {
+    setIsSubmitting(true);
     try {
       await axios.post(ApiUrl.logout + "?token=" + token);
       localStorage.removeItem("access_token");
@@ -57,17 +62,35 @@ const Order = () => {
   };
 
   const updateOrderStatus = async ({ target: { value } }, orderId) => {
+    setIsSubmitting(true);
     try {
-      await axios.post(
-        ApiUrl.orderStatusUpate +
-          `?orderId=${orderId}&status=${value}&token=${token}`
-      );
+      const payload = {
+        orderId,
+        status: value,
+      };
+      await axios.post(ApiUrl.orderStatusUpate + `?token=${token}`, payload);
+      window.location.reload();
     } catch (err) {
       console.log({ err });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const getOrderIPNDetails = async (invoiceNo, amount) => {};
+  const getOrderIPNDetails = async (id) => {
+    setIsSubmitting(true);
+    try {
+      const { data } = await axios.get(
+        ApiUrl.orderIPNDetails + `?orderId=${id}&token=${token}`
+      );
+      setInvoiceDetails(data);
+      setShow(true);
+    } catch (err) {
+      console.log({ err });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (token) {
     return isFetching ? (
@@ -117,7 +140,7 @@ const Order = () => {
                   return (
                     <tr key={key}>
                       <td>{++key}</td>
-                      <td>{order.invoice_no}</td>
+                      <td>{order.invoice_id}</td>
                       <td>{order.amount}</td>
                       <td>{order.customer_name}</td>
                       <td>{order.customer_email}</td>
@@ -127,16 +150,15 @@ const Order = () => {
                         <Button
                           variant="primary"
                           size="sm"
-                          onClick={getOrderIPNDetails(
-                            order.invoice_no,
-                            order.amount
-                          )}
+                          disabled={isSumitting}
+                          onClick={() => getOrderIPNDetails(order.id)}
                         >
-                          ➤
+                          IPN
                         </Button>
                       </td>
                       <td>
                         <select
+                          style={{ width: "80%" }}
                           name="status"
                           className="form-control"
                           value={order.status}
@@ -155,6 +177,19 @@ const Order = () => {
             </Table>
           </Col>
         </Row>
+        <Modal show={show} onHide={() => setShow(false)} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>Invoice</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Invoice invoiceDetails={invoiceDetails} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShow(false)}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

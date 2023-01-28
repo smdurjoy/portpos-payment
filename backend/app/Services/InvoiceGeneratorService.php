@@ -19,7 +19,6 @@ class InvoiceGeneratorService
                 'Authorization' => $this->getAuthKey(),
             ],
         ]);
-        print_r($this->getAuthKey());
         return $this;
     }
 

@@ -9,6 +9,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         $router->group(['prefix' => 'order'], function () use ($router) {
             $router->get('/', 'OrderController@list');
+            $router->post('/status-update', 'OrderController@updateStaus');
+            $router->get('/ipn', 'OrderController@getOrderIPNDetails');
             $router->post('store', 'OrderController@store');
         });
     });
@@ -16,10 +18,4 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
-});
-
-$router->get('/invoice-response', function ($data) use ($router) {
-    echo "OKAY";
-    // dd($data);
-    // return $router->app->version();
 });

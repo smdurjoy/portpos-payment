@@ -13,6 +13,9 @@ use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
+    /**
+     * @return JsonResponse
+     */
     public function list(): JsonResponse
     {
         try {
@@ -23,7 +26,12 @@ class OrderController extends Controller
         }
     }
 
-    public function store(Request $request, Order $order)
+    /**
+     * @param Request $request
+     * @param Order $order
+     * @return JsonResponse
+     */
+    public function store(Request $request, Order $order): JsonResponse
     {
         try {
             $requestObj = $request->all();
@@ -32,10 +40,8 @@ class OrderController extends Controller
             $order->fill($data)->save();
 
             $response = InvoiceGeneratorService::init()
-                ->setBody($requestObj)
+                ->setBody($request->except('token'))
                 ->generateInvoice();
-
-            print_r($response);
 
             if ($response->getStatusCode() === 201) {
                 $body = json_decode($response->getBody()->getContents(), true);
@@ -55,25 +61,73 @@ class OrderController extends Controller
         }
     }
 
-    // public function generateInvoice($payload)
-    // {
-    //     $client = new GuzzleClient();
 
-    //     $authorization = 'Bearer ' . base64_encode(env('PORT_POS_APP_KEY') . ':' . md5(env('PORT_POS_SECRET_KEY') . time()));
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateStaus(Request $request): JsonResponse
+    {
+        try {
+            $order = Order::query()->findOrFail($request->get('orderId'));
+            $order->status = $request->get('status');
+            $order->save();
+            return response()->json($order, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    //     $headers = [
-    //         'Authorization' => $authorization,
-    //     ];
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getOrderIPNDetails(Request $request): JsonResponse
+    {
+        try {
+            $order = Order::query()->find($request->get('orderId'));
+            $invoiceId = $order['invoice_id'];
+            $amount = $order['amount'];
+            $response = InvoiceGeneratorService::init()->getIPN($invoiceId, $amount);
+            $resBody = json_decode($response->getBody()->getContents(), true);
+            return response()->json($this->formatIpnResponse($resBody, $order), Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-    //     $raw_response = $client->post(env('PORT_POS_SANDBOX_URL'), [
-    //         'headers' => $headers,
-    //         'json' => $payload,
-    //         'allow_redirects' => true
-    //     ]);
+    /**
+     * format ipn response for frontend
+     * @param $response
+     * @return array
+     */
+    private function formatIpnResponse($response, $order): array
+    {
+        return [
+            'invoice_no' => $response['data']['invoice_id'] ?? null,
+            'invoice_date' => date('d-m-Y', strtotime($order['created_at'])),
+            'payment_url' => $order['payment_link'],
+            'amount' => $response['data']['order']['amount'] ?? null,
+            'currency' => $response['data']['order']['currency'] ?? null,
+            'status' => $response['data']['order']['status'] ?? null,
+            'product_name' => $response['data']['product']['name'] ?? null,
+            'product_description' => $response['data']['product']['description'] ?? null,
+            'customer_name' => $response['data']['billing']['customer']['name'] ?? null,
+            'customer_email' => $response['data']['billing']['customer']['email'] ?? null,
+            'customer_phone' => $response['data']['billing']['customer']['phone'] ?? null,
+            'customer_street' => $response['data']['billing']['customer']['address']['street'] ?? null,
+            'customer_city' => $response['data']['billing']['customer']['address']['city'] ?? null,
+            'customer_state' => $response['data']['billing']['customer']['address']['state'] ?? null,
+            'customer_zipcode' => $response['data']['billing']['customer']['address']['zipcode'] ?? null,
+            'customer_country' => $response['data']['billing']['customer']['address']['country'] ?? "Bangladesh",
+        ];
+    }
 
-    //     return $raw_response;
-    // }
-
+    /**
+     * format request data for order store
+     * @param $requestObj
+     * @return array
+     */
     private function format($requestObj): array
     {
         return [
