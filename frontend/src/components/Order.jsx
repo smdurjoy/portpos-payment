@@ -56,6 +56,19 @@ const Order = () => {
     }
   };
 
+  const updateOrderStatus = async ({ target: { value } }, orderId) => {
+    try {
+      await axios.post(
+        ApiUrl.orderStatusUpate +
+          `?orderId=${orderId}&status=${value}&token=${token}`
+      );
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
+  const getOrderIPNDetails = async (invoiceNo, amount) => {};
+
   if (token) {
     return isFetching ? (
       <p className="text-center mt-3">loading...</p>
@@ -90,13 +103,12 @@ const Order = () => {
                 <tr>
                   <th>SL</th>
                   <th>Invoice No</th>
-                  <th>Product Name</th>
-                  <th>Product Description</th>
                   <th>Amount</th>
                   <th>Customer Name</th>
                   <th>Customer Address</th>
                   <th>Phone</th>
                   <th>City</th>
+                  <th>Details</th>
                   <th>Payment Status</th>
                 </tr>
               </thead>
@@ -105,15 +117,37 @@ const Order = () => {
                   return (
                     <tr key={key}>
                       <td>{++key}</td>
-                      <td>#123</td>
-                      <td>{order.product_name}</td>
-                      <td>{order.product_description}</td>
+                      <td>{order.invoice_no}</td>
                       <td>{order.amount}</td>
                       <td>{order.customer_name}</td>
                       <td>{order.customer_email}</td>
                       <td>{order.customer_phone}</td>
                       <td>{order.city}</td>
-                      <td></td>
+                      <td>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={getOrderIPNDetails(
+                            order.invoice_no,
+                            order.amount
+                          )}
+                        >
+                          ➤
+                        </Button>
+                      </td>
+                      <td>
+                        <select
+                          name="status"
+                          className="form-control"
+                          value={order.status}
+                          onChange={(e) => updateOrderStatus(e, order.id)}
+                        >
+                          <option value="0">Pending</option>
+                          <option value="1">Paid</option>
+                          <option value="2">Fulfilled</option>
+                          <option value="3">Refund</option>
+                        </select>
+                      </td>
                     </tr>
                   );
                 })}

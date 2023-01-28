@@ -17,3 +17,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->get('/invoice-response', function ($data) use ($router) {
+    echo "OKAY";
+    // dd($data);
+    // return $router->app->version();
+});

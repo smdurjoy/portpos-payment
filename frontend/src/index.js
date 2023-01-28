@@ -5,7 +5,6 @@ import App from "./App";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Order from "./components/Order";
 import OrderCreate from "./components/OrderCreate";
-import axios from "axios";
 
 const router = createBrowserRouter([
   {

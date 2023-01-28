@@ -10,17 +10,29 @@ import AlertMsg from "./AlertMsg";
 
 const OrderCreate = () => {
   const [orderObj, setOrderObj] = useState({
-    product_name: null,
-    product_description: null,
-    amount: null,
-    customer_name: null,
-    customer_email: null,
-    customer_phone: null,
-    street: null,
-    city: null,
-    state: null,
-    zipcode: null,
-    country: null,
+    order: {
+      amount: 0.0,
+      currency: "BDT",
+      redirect_url: "http://localhost:3000",
+    },
+    billing: {
+      customer: {
+        name: "",
+        email: "",
+        phone: "",
+        address: {
+          street: "",
+          city: "",
+          state: "",
+          zipcode: "",
+          country: "BD",
+        },
+      },
+    },
+    product: {
+      name: "",
+      description: "",
+    },
   });
   const [token, setToken] = useState(null);
   const [isSumitting, setIsSubmitting] = useState(false);
@@ -43,12 +55,17 @@ const OrderCreate = () => {
       return;
     }
     setIsSubmitting(true);
+    orderObj.order.amount = parseFloat(orderObj.order.amount);
     try {
-      await axios.post(ApiUrl.orderCreate + "?token=" + token, orderObj);
+      const { data } = await axios.post(
+        ApiUrl.orderCreate + "?token=" + token,
+        orderObj
+      );
+      localStorage.setItem("order", JSON.stringify(data));
       setShow(true);
       setTimeout(() => {
         navigate("/");
-      }, 700);
+      }, 500);
     } catch (err) {
       console.log({ err });
       alert("Something Went Wrong.");
@@ -61,17 +78,16 @@ const OrderCreate = () => {
     let validation = false;
 
     if (
-      !orderObj.customer_name ||
-      !orderObj.customer_email ||
-      !orderObj.customer_phone ||
-      !orderObj.product_name ||
-      !orderObj.product_description ||
-      !orderObj.amount ||
-      !orderObj.city ||
-      !orderObj.street ||
-      !orderObj.state ||
-      !orderObj.zipcode ||
-      !orderObj.country
+      !orderObj.billing.customer.name ||
+      !orderObj.billing.customer.email ||
+      !orderObj.billing.customer.phone ||
+      !orderObj.product.name ||
+      !orderObj.product.description ||
+      !orderObj.order.amount ||
+      !orderObj.billing.customer.address.city ||
+      !orderObj.billing.customer.address.street ||
+      !orderObj.billing.customer.address.state ||
+      !orderObj.billing.customer.address.zipcode
     ) {
       validation = true;
     }
@@ -115,7 +131,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.product_name = e.target.value;
+                    prevState.product.name = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -135,7 +151,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.product_description = e.target.value;
+                    prevState.product.description = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -155,7 +171,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.amount = e.target.value;
+                    prevState.order.amount = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -175,7 +191,7 @@ const OrderCreate = () => {
                 placeholder="Enter"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.customer_name = e.target.value;
+                    prevState.billing.customer.name = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -195,7 +211,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.customer_email = e.target.value;
+                    prevState.billing.customer.email = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -215,7 +231,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.customer_phone = e.target.value;
+                    prevState.billing.customer.phone = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -235,7 +251,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.street = e.target.value;
+                    prevState.billing.customer.address.street = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -255,7 +271,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.city = e.target.value;
+                    prevState.billing.customer.address.city = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -275,7 +291,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.state = e.target.value;
+                    prevState.billing.customer.address.state = e.target.value;
                     return {
                       ...prevState,
                     };
@@ -295,27 +311,7 @@ const OrderCreate = () => {
                 size="sm"
                 onChange={(e) =>
                   setOrderObj((prevState) => {
-                    prevState.zipcode = e.target.value;
-                    return {
-                      ...prevState,
-                    };
-                  })
-                }
-              />
-            </Form.Group>
-          </Col>
-          <Col md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label column="sm">
-                Country <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter"
-                size="sm"
-                onChange={(e) =>
-                  setOrderObj((prevState) => {
-                    prevState.country = e.target.value;
+                    prevState.billing.customer.address.zipcode = e.target.value;
                     return {
                       ...prevState,
                     };
