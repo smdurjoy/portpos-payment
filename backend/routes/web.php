@@ -9,7 +9,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         $router->group(['prefix' => 'order'], function () use ($router) {
             $router->get('/', 'OrderController@list');
-            $router->post('/status-update', 'OrderController@updateStaus');
+            $router->put('/status-update', 'OrderController@updateStaus');
             $router->get('/ipn', 'OrderController@getOrderIPNDetails');
             $router->post('store', 'OrderController@store');
         });

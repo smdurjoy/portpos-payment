@@ -68,7 +68,7 @@ const Order = () => {
         orderId,
         status: value,
       };
-      await axios.post(ApiUrl.orderStatusUpate + `?token=${token}`, payload);
+      await axios.put(ApiUrl.orderStatusUpate + `?token=${token}`, payload);
       window.location.reload();
     } catch (err) {
       console.log({ err });
